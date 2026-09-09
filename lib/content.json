@@ -1,0 +1,44 @@
+{
+  "name": "Safrin Farhan",
+  "initials": "sf.",
+  "location": "Mangaluru, Karnataka",
+  "positioning": "Aspiring Cloud Engineer · RAG & AI Systems",
+  "intro": "Connecting intelligent systems with the infrastructure that brings them to life.",
+  "availability": "Open to opportunities",
+  "linkedin": "https://www.linkedin.com/in/Safrinfarhan/",
+  "hero": { "eyebrow": "CURIOSITY. CODE. CLOUD.", "screenTitle": "Building what’s next.", "screenSubtitle": "One system at a time.", "screenCommand": "safrin@workspace ~ % build the future", "screenStatus": "Cloud infrastructure · Intelligent systems" },
+  "about": {
+    "title": "Curious by nature.\nAn engineer in the making.",
+    "paragraphs": [
+      "I’m Safrin, a final-year AI & ML engineering student who loves understanding how things work — and making them work better.",
+      "My journey started with AI automation, prompt engineering, and evaluating LLM outputs. Today, I’m connecting that experience to cloud infrastructure, DevOps, and RAG-based systems. I’m interested in the whole picture: not just building something intelligent, but making it reliable, useful, and ready for the real world."
+    ],
+    "focus": "Currently exploring cloud infrastructure, retrieval-augmented generation, and agentic AI."
+  },
+  "skills": [
+    { "group": "Cloud & infrastructure", "description": "The foundation beneath the application.", "items": [{ "name": "AWS", "logo": "amazon-web-services/light" }, { "name": "Docker", "logo": "docker/mono" }, { "name": "Terraform", "logo": "terraform/mono" }, { "name": "Jenkins", "logo": "jenkins/mono" }, { "name": "CI/CD", "logo": "" }] },
+    { "group": "Systems", "description": "Understanding what makes it all run.", "items": [{ "name": "Linux", "logo": "linux/mono" }, { "name": "Networking", "logo": "" }, { "name": "Bash", "logo": "bash/light" }] },
+    { "group": "Development & version control", "description": "From the first commit to a working system.", "items": [{ "name": "Python", "logo": "python/mono" }, { "name": "Git", "logo": "git/mono" }, { "name": "GitHub", "logo": "github/light" }, { "name": "SQL", "logo": "" }] },
+    { "group": "AI & RAG", "description": "Giving intelligent systems the right context.", "items": [{ "name": "RAG", "logo": "" }, { "name": "Embeddings", "logo": "" }, { "name": "Vector databases", "logo": "" }, { "name": "LangChain", "logo": "langchain/mono" }, { "name": "ChromaDB", "logo": "" }, { "name": "APIs", "logo": "" }] }
+  ],
+  "certifications": [
+    { "name": "AWS Certified AI Practitioner", "level": "Foundational", "code": "AIF-C01", "description": "AI, machine learning, and generative AI on AWS.", "credentialId": "", "verifyUrl": "", "issueDate": "" },
+    { "name": "AWS Certified Cloud Practitioner", "level": "Foundational", "code": "CLF-C02", "description": "Cloud concepts, AWS services, security, and architecture.", "credentialId": "", "verifyUrl": "", "issueDate": "" }
+  ],
+  "supportingCertifications": [
+    { "name": "Fundamentals of Machine Learning and Artificial Intelligence", "issuer": "AWS Skill Builder" },
+    { "name": "Introduction to Machine Learning: Art of the Possible", "issuer": "AWS Skill Builder" },
+    { "name": "Introduction to Amazon SageMaker", "issuer": "AWS Skill Builder" },
+    { "name": "Web Development", "issuer": "NxtWave" }
+  ],
+  "projects": [
+    { "name": "NURA", "category": "AI-POWERED WOMEN’S SAFETY", "tagline": "Technology that looks out for you.", "description": "A women’s safety platform that brings SOS alerts, safe-route recommendations, and a smart SOS locket together in one connected experience.", "image": "/images/nura-locket.png", "imageAlt": "Concept visualization of a silver SOS safety pendant and a companion smartphone", "imageCaption": "Product concept visualization · Not a photograph of the prototype", "tags": ["React", "TypeScript", "AI", "Cloud integration", "IoT prototype"], "details": "NURA explores how intelligent software and a physical safety device can work together. The React and TypeScript front end brings emergency alerts and safe-route recommendations into a single interface, with cloud integration connecting the experience. A smart SOS locket prototype extends the concept beyond the phone.", "features": ["SOS alerts for emergency assistance", "Safe-route recommendations", "Smart SOS locket prototype", "React / TypeScript front end with cloud integration"], "url": "", "repository": "" }
+  ],
+  "experience": [
+    { "company": "RVZOR.in", "role": "Founder", "description": "Turning ideas into execution. Managed cross-functional projects, built AI-assisted workflows, and maintained quality standards using ChatGPT, Gemini, RunwayML, and Google Veo.", "tags": ["Leadership", "AI workflows", "Quality control"] },
+    { "company": "IEEE Student Branch", "role": "Vice Chair", "description": "Creating space for people to learn and build. Organized technical events and workshops, coordinated teams, and secured sponsorships to bring initiatives to life.", "tags": ["Community", "Technical events", "Team coordination"] }
+  ],
+  "education": { "institution": "Srinivas Institute of Technology", "degree": "Bachelor of Engineering", "specialization": "Artificial Intelligence & Machine Learning", "status": "Final-year student", "cgpa": "8.41" },
+  "resume": { "title": "The journey, on one page.", "description": "A closer look at my experience, technical skills, and the things I’m learning along the way.", "pdfUrl": "" },
+  "contact": { "title": "Let’s build\nsomething meaningful.", "description": "Have an opportunity, an interesting idea, or a shared curiosity about cloud and AI? I’d love to hear from you.", "deliveryNote": "Direct delivery isn’t connected yet. Copy your message and send it to me on LinkedIn." }
+}
