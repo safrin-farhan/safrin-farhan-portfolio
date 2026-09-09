@@ -3,9 +3,9 @@ import content from "@/lib/content.json"
 import { SectionHeading } from "./about-skills"
 
 export function Certifications() {
-  return <section id="certifications" className="portfolio-section">
+  return <section id="certifications" data-scene="certifications" className="portfolio-section">
     <SectionHeading label="LEARNING, WITH INTENT" title="Building a stronger foundation." description="Cloud and AI knowledge, backed by structured learning." />
-    <div className="certification-grid">{content.certifications.map(cert => <article className="certification" key={cert.name}>
+    <div className="certification-grid">{content.certifications.map(cert => <article className="certification" data-tilt key={cert.name}>
       <div className="certification-top"><div className="aws-badge"><img src="https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/amazon-web-services/light.svg" alt="AWS" width={52} height={32} loading="lazy" /><Award size={35} strokeWidth={1.2} /><span>{cert.level}</span></div><span className="cert-code font-mono">{cert.code}</span></div>
       <div className="certification-copy"><h3>{cert.name}</h3><p>{cert.description}</p></div>
       {cert.verifyUrl ? <a className="text-link" href={cert.verifyUrl} target="_blank" rel="noopener noreferrer">Verify credential <ArrowUpRight size={16} /></a> : <span className="credential-pending">Verification details to be added</span>}
