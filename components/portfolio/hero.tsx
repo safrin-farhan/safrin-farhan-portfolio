@@ -5,6 +5,8 @@ import { Component, useCallback, useEffect, useRef, useState, type ReactNode } f
 import { ArrowDown, ArrowDownRight, ArrowUpRight, Cloud, MapPin, Terminal } from "lucide-react"
 import content from "@/lib/content.json"
 import { cn } from "@/lib/utils"
+import { HERO_START } from "@/lib/portfolio-motion"
+import { useHeroTimeline } from "./use-hero-timeline"
 
 const MacBookScene = dynamic(() => import("./macbook-scene"), { ssr: false })
 
@@ -23,7 +25,7 @@ export function Hero() {
   const section = useRef<HTMLElement>(null)
   const [mode, setMode] = useState<"static" | "3d">("static")
   const [ready, setReady] = useState(false)
-  const [progress, setProgress] = useState(0)
+  const { progress, offset } = useHeroTimeline(section, mode === "3d" && ready)
   const onReady = useCallback(() => setReady(true), [])
   const onFailure = useCallback(() => { setMode("static"); setReady(false) }, [])
   useEffect(() => {
@@ -41,33 +43,17 @@ export function Hero() {
     query.addEventListener("change", check)
     return () => query.removeEventListener("change", check)
   }, [])
-  useEffect(() => {
-    if (mode !== "3d") { setProgress(0); return }
-    let frame = 0
-    const update = () => {
-      cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(() => {
-        if (!section.current) return
-        const rect = section.current.getBoundingClientRect()
-        setProgress(Math.max(0, Math.min(1, -rect.top / (rect.height - window.innerHeight))))
-      })
-    }
-    window.addEventListener("scroll", update, { passive: true })
-    window.addEventListener("resize", update)
-    update()
-    return () => { window.removeEventListener("scroll", update); window.removeEventListener("resize", update); cancelAnimationFrame(frame) }
-  }, [mode])
-  const fade = Math.max(0, 1 - progress * 4)
+  const fade = Math.max(0, HERO_START.text.opacity - progress * 4)
   return (
-    <section ref={section} id="home" className={cn("hero-sequence", mode === "3d" && "cinematic")} aria-label="Introduction">
+    <section ref={section} id="home" className={cn("hero-sequence", mode === "3d" && "cinematic")} aria-label="Introduction" style={{ background: HERO_START.background }} data-hero-progress={progress} data-hero-offset={offset}>
       <div className="hero-sticky">
-        <div className="page-width hero-copy" style={{ opacity: fade, visibility: fade === 0 ? "hidden" : "visible", transform: `translateY(${-progress * 80}px)` }}>
+        <div className="page-width hero-copy" style={{ opacity: fade, visibility: fade === 0 ? "hidden" : "visible", transform: `translateY(${HERO_START.text.y - progress * 80}px)` }}>
           <div className="hero-heading"><div className="eyebrow"><span className="small-cross">+</span>{content.hero.eyebrow}</div><h1>{content.name.split(" ")[0]}<span>{content.name.split(" ").slice(1).join(" ")}<span className="name-period">.</span></span></h1></div>
           <div className="hero-intro"><div className="availability"><span className="status-dot" />{content.availability}</div><h2>Aspiring Cloud Engineer<span>RAG & AI Systems</span></h2><p>{content.intro}</p><a href="#projects" className="text-link">Explore my work <ArrowDownRight size={18} /></a></div>
         </div>
         <div className="hero-visual" role="img" aria-label="A silver laptop displaying Safrin’s cloud engineering workspace. Scroll to enter the workspace.">
           <div className={cn("laptop-fallback", ready && mode === "3d" && "is-hidden")}><StaticLaptop /></div>
-          {mode === "3d" && <SceneBoundary onFailure={onFailure}><MacBookScene progress={progress} onReady={onReady} /></SceneBoundary>}
+          {mode === "3d" && <SceneBoundary onFailure={onFailure}><MacBookScene progress={progress} offset={offset} onReady={onReady} /></SceneBoundary>}
         </div>
         <div className="page-width hero-annotations" style={{ opacity: fade }} aria-hidden={fade === 0}>
           <div className="annotation-left"><span className="annotation-line" /><span>IDEAS INTO SYSTEMS.<br />SYSTEMS INTO IMPACT.</span></div>
@@ -78,7 +64,7 @@ export function Hero() {
           <a href="#workspace" className="scroll-cue"><span className="scroll-icon"><ArrowDown size={14} /></span>SCROLL TO STEP INSIDE</a>
           <a href={content.linkedin} target="_blank" rel="noopener noreferrer" className="hero-linkedin">LinkedIn <ArrowUpRight size={15} /></a>
         </div>
-        <div className="cinematic-blackout" style={{ opacity: Math.max(0, (progress - 0.79) / 0.21) }} />
+        <div className="cinematic-blackout" style={{ opacity: Math.max(HERO_START.blackout, (progress - 0.79) / 0.21) }} />
       </div>
     </section>
   )

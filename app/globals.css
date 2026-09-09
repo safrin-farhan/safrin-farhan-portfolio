@@ -138,7 +138,9 @@
 .static-keyboard i { height: 9px; background: var(--ink); border-radius: 2px; }
 .static-trackpad { width: 25%; height: 30px; border: 1px solid var(--gray); margin-top: 9px; border-radius: 3px; }
 .static-lip { width: 100%; height: 7px; background: var(--gray); border-radius: 0 0 40% 40%; transform: translateY(-55px); box-shadow: 0 15px 25px color-mix(in srgb, var(--ink) 15%, transparent); }
-.workspace { position: relative; background: var(--background); color: var(--foreground); }
+.workspace { position: relative; background: var(--background); color: var(--foreground); overflow-x: clip; }
+[data-stack-power] > svg, [data-stack-power] > img { opacity: calc(0.35 + var(--stack-progress, 1) * 0.65); }
+[data-stack-power] { border-color: color-mix(in srgb, var(--silver) calc(6% + var(--stack-progress, 1) * 7%), transparent); }
 .workspace-status { border-bottom: 1px solid var(--border); }
 .workspace-status-inner { min-height: 56px; display: flex; align-items: center; justify-content: space-between; color: var(--gray); font-size: 14px; }
 .workspace-status-inner > span { display: flex; align-items: center; gap: 0.75rem; font-family: var(--font-geist-mono), monospace; }
