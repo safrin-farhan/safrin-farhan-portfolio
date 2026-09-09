@@ -265,6 +265,19 @@ summary svg { transition: transform 180ms; }
 .portfolio-footer > p span { font-size: 14px; }
 .back-to-top { display: flex; align-items: center; gap: 0.8rem; font-size: 14px; color: var(--gray); }
 
+.loop-overlay { position: fixed; inset: 0; z-index: 120; background: var(--paper); overflow: hidden; opacity: 0; visibility: hidden; pointer-events: none; }
+.loop-overlay[data-phase="white"] { opacity: 1; visibility: visible; transition: opacity 450ms ease; }
+.loop-overlay[data-phase="build"] { opacity: 1; visibility: visible; }
+.loop-overlay[data-phase="out"] { opacity: 0; visibility: visible; transition: opacity 500ms ease; }
+.loop-laptop { position: absolute; inset: 0; opacity: 0; transform: translateY(48vh); }
+.loop-overlay[data-phase="build"] .loop-laptop, .loop-overlay[data-phase="out"] .loop-laptop { opacity: 1; transform: translateY(0); transition: transform 680ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 420ms ease; }
+.loop-copy { position: absolute; inset: 0; z-index: 2; display: flex; justify-content: space-between; align-items: flex-start; padding-top: clamp(130px, 16vh, 180px); pointer-events: none; }
+.loop-name { font-size: clamp(70px, 8vw, 120px); line-height: 0.91; letter-spacing: -0.08em; font-weight: 520; color: var(--foreground); opacity: 0; transform: translateX(-70px); }
+.loop-name > span { display: block; }
+.loop-role { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 2rem; font-size: 18px; letter-spacing: -0.04em; color: var(--muted-foreground); opacity: 0; transform: translateX(70px); }
+.loop-overlay[data-phase="build"] .loop-name, .loop-overlay[data-phase="out"] .loop-name { opacity: 1; transform: none; transition: opacity 520ms ease 60ms, transform 620ms cubic-bezier(0.22, 0.61, 0.36, 1) 60ms; }
+.loop-overlay[data-phase="build"] .loop-role, .loop-overlay[data-phase="out"] .loop-role { opacity: 1; transform: none; transition: opacity 520ms ease 160ms, transform 620ms cubic-bezier(0.22, 0.61, 0.36, 1) 160ms; }
+@media (max-width: 767px) { .loop-copy { flex-direction: column; padding-top: 119px; } .loop-role { margin-top: 1.25rem; } }
 @media (min-width: 1600px) { .hero-copy { padding-top: 17vh; } }
 @media (max-width: 1100px) {
   .brand-caption, .brand-slash { display: none; }

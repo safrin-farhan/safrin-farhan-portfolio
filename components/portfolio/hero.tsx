@@ -15,7 +15,7 @@ class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => vo
   render() { return this.state.failed ? null : this.props.children }
 }
 
-function StaticLaptop() {
+export function StaticLaptop() {
   return <div className="static-laptop" aria-hidden="true"><div className="static-screen"><div className="screen-toolbar"><span>● ● ●</span><span>safrin / workspace</span><Terminal size={12} /></div><div className="screen-body"><Cloud size={32} strokeWidth={1.25} /><span>{content.hero.screenTitle}<br /><span className="screen-muted">{content.hero.screenSubtitle}</span></span><p>{content.hero.screenStatus}</p></div><div className="screen-terminal"><span>~</span> {content.hero.screenCommand}<span className="screen-cursor" /></div></div><div className="static-base"><div className="static-keyboard">{Array.from({ length: 60 }, (_, i) => <i key={i} />)}</div><div className="static-trackpad" /></div><div className="static-lip" /></div>
 }
 
