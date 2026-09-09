@@ -8,6 +8,51 @@ import content from "@/lib/content.json"
 
 const palette = { silver: "#d9dde3", light: "#fafbfc", ink: "#101114", gray: "#8c919b", blue: "#3979ed" }
 const ease = (t: number) => { const x = THREE.MathUtils.clamp(t, 0, 1); return x * x * (3 - 2 * x) }
+const mix = (a: number, b: number, u: number) => a + (b - a) * u
+
+/**
+ * Tunable timings for the auto-playing intro loop (seconds).
+ * riseDuration: rise-from-bottom entrance into the rest pose.
+ * loopPauseDuration: how long the laptop holds at rest before looping back.
+ * resetDuration: the smooth loop-back descent that returns to the entrance pose.
+ */
+const LOOP = { riseDuration: 1.5, loopPauseDuration: 1.0, resetDuration: 1.1 }
+const CYCLE = LOOP.riseDuration + LOOP.loopPauseDuration + LOOP.resetDuration
+
+type LaptopPose = { scale: number; position: [number, number, number]; rotation: [number, number, number]; lid: number }
+
+/**
+ * Single shared reference for the hero's "at rest, scroll 0" state.
+ * Both the initial page load and the end of every loop-back settle into this
+ * exact pose, so the cycle always hands off from the identical frame the page
+ * opened on — no pop, no snap.
+ */
+const REST: LaptopPose = { scale: 0.62, position: [0, -2.55, 0], rotation: [0, -0.13, -0.03], lid: -0.05 }
+
+/** Off-screen entrance pose: below the frame with a subtle tilt so the rise reads as motion, not a cut. */
+const ENTER: LaptopPose = { scale: 0.52, position: [0, -6.4, 0.6], rotation: [0.06, -0.24, -0.05], lid: -0.14 }
+
+// World-space center of the lid screen at the REST pose (lid base + screen offsets,
+// scaled by REST.scale). Derived from REST so the scroll dive always aims at the
+// actual screen even when the rest pose is retuned.
+const SCREEN_CENTER = {
+  y: REST.position[1] + REST.scale * (0.08 + 1.49),
+  z: REST.position[2] + REST.scale * (-1.35 + 0.073),
+}
+
+const CAMERA = {
+  rest: { position: [0, 3.45, 9.1] as const, target: [0, 0.2, 0] as const },
+  screen: { position: [0, SCREEN_CENTER.y + 0.06, SCREEN_CENTER.z + 0.82] as const, target: [0, SCREEN_CENTER.y, SCREEN_CENTER.z - 1.3] as const },
+}
+
+function mixPose(a: LaptopPose, b: LaptopPose, u: number): LaptopPose {
+  return {
+    scale: mix(a.scale, b.scale, u),
+    position: [mix(a.position[0], b.position[0], u), mix(a.position[1], b.position[1], u), mix(a.position[2], b.position[2], u)],
+    rotation: [mix(a.rotation[0], b.rotation[0], u), mix(a.rotation[1], b.rotation[1], u), mix(a.rotation[2], b.rotation[2], u)],
+    lid: mix(a.lid, b.lid, u),
+  }
+}
 
 function createScreen() {
   const canvas = document.createElement("canvas")
@@ -87,18 +132,51 @@ function Laptop({ progress, onReady }: { progress: number; onReady: () => void }
   const { invalidate } = useThree()
   const texture = useMemo(createScreen, [])
   const keyboard = useMemo(createKeyboard, [])
+  const elapsed = useRef(0)
   useEffect(() => { onReady(); return () => { texture.dispose(); keyboard.dispose() } }, [texture, keyboard, onReady])
   useEffect(() => { invalidate() }, [progress, invalidate])
-  useFrame(({ camera }) => {
+  useFrame(({ camera }, delta) => {
     if (!group.current || !lid.current) return
-    const reveal = ease(progress / 0.35)
-    const zoom = ease((progress - 0.25) / 0.75)
-    group.current.scale.setScalar(THREE.MathUtils.lerp(0.62, 1, reveal))
-    group.current.position.set(0, THREE.MathUtils.lerp(-1.65, -0.78, reveal), 0)
-    group.current.rotation.set(0, THREE.MathUtils.lerp(-0.19, 0, reveal), THREE.MathUtils.lerp(-0.035, 0, reveal))
-    lid.current.rotation.x = THREE.MathUtils.lerp(-0.13, 0, reveal)
-    camera.position.set(0, THREE.MathUtils.lerp(3.45, 0.68, zoom), THREE.MathUtils.lerp(9.1, 0.02, zoom))
-    camera.lookAt(0, THREE.MathUtils.lerp(0.2, 0.68, zoom), THREE.MathUtils.lerp(0, -1.05, zoom))
+
+    let pose: LaptopPose
+    if (progress <= 0.0001) {
+      // At the top of the page: play the self-running intro loop.
+      elapsed.current = (elapsed.current + delta) % CYCLE
+      const t = elapsed.current
+      if (t < LOOP.riseDuration) {
+        // Real animated rise-from-bottom transition into the shared rest state.
+        pose = mixPose(ENTER, REST, ease(t / LOOP.riseDuration))
+      } else if (t < LOOP.riseDuration + LOOP.loopPauseDuration) {
+        // Hold at the exact rest reference.
+        pose = REST
+      } else {
+        // Loop-back descent, ending precisely on ENTER so the next rise is seamless.
+        pose = mixPose(REST, ENTER, ease((t - LOOP.riseDuration - LOOP.loopPauseDuration) / LOOP.resetDuration))
+      }
+      invalidate() // keep frames flowing while the demand-rendered loop is active
+    } else {
+      // Once scrolling begins, the laptop is pinned to the shared rest state
+      // and the camera dives into the screen — driven entirely by scroll.
+      pose = REST
+      elapsed.current = 0
+    }
+
+    group.current.scale.setScalar(pose.scale)
+    group.current.position.set(pose.position[0], pose.position[1], pose.position[2])
+    group.current.rotation.set(pose.rotation[0], pose.rotation[1], pose.rotation[2])
+    lid.current.rotation.x = pose.lid
+
+    const zoom = ease(progress / 0.8)
+    camera.position.set(
+      mix(CAMERA.rest.position[0], CAMERA.screen.position[0], zoom),
+      mix(CAMERA.rest.position[1], CAMERA.screen.position[1], zoom),
+      mix(CAMERA.rest.position[2], CAMERA.screen.position[2], zoom),
+    )
+    camera.lookAt(
+      mix(CAMERA.rest.target[0], CAMERA.screen.target[0], zoom),
+      mix(CAMERA.rest.target[1], CAMERA.screen.target[1], zoom),
+      mix(CAMERA.rest.target[2], CAMERA.screen.target[2], zoom),
+    )
     camera.updateProjectionMatrix()
   })
   return <group ref={group}>
