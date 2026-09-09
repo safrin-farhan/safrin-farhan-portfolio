@@ -8,6 +8,8 @@ import content from "@/lib/content.json"
 
 const palette = { silver: "#d9dde3", light: "#fafbfc", ink: "#101114", gray: "#8c919b", blue: "#3979ed" }
 const ease = (t: number) => { const x = THREE.MathUtils.clamp(t, 0, 1); return x * x * (3 - 2 * x) }
+/** The laptop holds its opening pose until the hero copy is almost gone (copy fades over 0–0.12 in hero.tsx). */
+const REVEAL_START = 0.1
 
 function createScreen() {
   const canvas = document.createElement("canvas")
@@ -84,17 +86,22 @@ function createKeyboard() {
 function Laptop({ progress, onReady }: { progress: number; onReady: () => void }) {
   const group = useRef<THREE.Group>(null)
   const lid = useRef<THREE.Group>(null)
-  const { invalidate } = useThree()
+  const { invalidate, size } = useThree()
   const texture = useMemo(createScreen, [])
   const keyboard = useMemo(createKeyboard, [])
   useEffect(() => { onReady(); return () => { texture.dispose(); keyboard.dispose() } }, [texture, keyboard, onReady])
-  useEffect(() => { invalidate() }, [progress, invalidate])
+  useEffect(() => { invalidate() }, [progress, size, invalidate])
   useFrame(({ camera }) => {
     if (!group.current || !lid.current) return
-    const reveal = ease(progress / 0.35)
+    // The resting laptop must fit the gap between the heading and intro columns, which narrows
+    // as the stage gets squarer, so its opening scale and height follow the viewport aspect.
+    const fit = THREE.MathUtils.clamp((size.width / size.height - 0.55) / 1.2, 0.6, 1)
+    const restScale = 0.62 * fit
+    const restY = THREE.MathUtils.lerp(-2.45, -1.65, fit)
+    const reveal = ease((progress - REVEAL_START) / 0.28)
     const zoom = ease((progress - 0.25) / 0.75)
-    group.current.scale.setScalar(THREE.MathUtils.lerp(0.62, 1, reveal))
-    group.current.position.set(0, THREE.MathUtils.lerp(-1.65, -0.78, reveal), 0)
+    group.current.scale.setScalar(THREE.MathUtils.lerp(restScale, 1, reveal))
+    group.current.position.set(0, THREE.MathUtils.lerp(restY, -0.78, reveal), 0)
     group.current.rotation.set(0, THREE.MathUtils.lerp(-0.19, 0, reveal), THREE.MathUtils.lerp(-0.035, 0, reveal))
     lid.current.rotation.x = THREE.MathUtils.lerp(-0.13, 0, reveal)
     camera.position.set(0, THREE.MathUtils.lerp(3.45, 0.68, zoom), THREE.MathUtils.lerp(9.1, 0.02, zoom))

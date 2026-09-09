@@ -5,6 +5,7 @@ import { Component, useCallback, useEffect, useRef, useState, type ReactNode } f
 import { ArrowDown, ArrowDownRight, ArrowUpRight, Cloud, MapPin, Terminal } from "lucide-react"
 import content from "@/lib/content.json"
 import { cn } from "@/lib/utils"
+import { QuickLookButton } from "./journey"
 
 const MacBookScene = dynamic(() => import("./macbook-scene"), { ssr: false })
 
@@ -57,7 +58,8 @@ export function Hero() {
     update()
     return () => { window.removeEventListener("scroll", update); window.removeEventListener("resize", update); cancelAnimationFrame(frame) }
   }, [mode])
-  const fade = Math.max(0, 1 - progress * 4)
+  // Copy is fully gone by progress 0.12, just before the laptop starts its reveal at 0.1 — so the two never share the frame.
+  const fade = Math.max(0, 1 - progress / 0.12)
   return (
     <section ref={section} id="home" className={cn("hero-sequence", mode === "3d" && "cinematic")} aria-label="Introduction">
       <div className="hero-sticky">
@@ -75,7 +77,10 @@ export function Hero() {
         </div>
         <div className="page-width hero-bottom" style={{ opacity: fade }} inert={fade === 0}>
           <span className="hero-location"><MapPin size={14} />{content.location}</span>
-          <a href="#workspace" className="scroll-cue"><span className="scroll-icon"><ArrowDown size={14} /></span>SCROLL TO STEP INSIDE</a>
+          <div className="hero-cues">
+            <a href="#workspace" className="scroll-cue"><span className="scroll-icon"><ArrowDown size={14} /></span>SCROLL TO STEP INSIDE</a>
+            <QuickLookButton />
+          </div>
           <a href={content.linkedin} target="_blank" rel="noopener noreferrer" className="hero-linkedin">LinkedIn <ArrowUpRight size={15} /></a>
         </div>
         <div className="cinematic-blackout" style={{ opacity: Math.max(0, (progress - 0.79) / 0.21) }} />
